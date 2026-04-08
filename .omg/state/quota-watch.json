@@ -1,12 +1,12 @@
 {
-  "turn_count": 33,
-  "last_session_id": "6e19d8d9-9d05-4171-8c0f-5e6faaac2ef5",
-  "last_event_key": "6e19d8d9-9d05-4171-8c0f-5e6faaac2ef5:transcript:7d9d2ccdb81315ac04fe71cb048335547d3f65ae402eb4a7c2c8aff541ca0421",
-  "last_transcript_hash": "7d9d2ccdb81315ac04fe71cb048335547d3f65ae402eb4a7c2c8aff541ca0421",
+  "turn_count": 4,
+  "last_session_id": "8a825d03-74d0-4768-bcb3-f1cb7db9bbc0",
+  "last_event_key": "8a825d03-74d0-4768-bcb3-f1cb7db9bbc0:transcript:0f4ab8fb459e04472d2dcd59795e7f9e0635c7df379a6e05063baa98cc951f8a",
+  "last_transcript_hash": "0f4ab8fb459e04472d2dcd59795e7f9e0635c7df379a6e05063baa98cc951f8a",
   "last_model": "gemini-3-flash-preview",
-  "last_turn_total_tokens": 58325,
-  "last_session_total_tokens": 1982871,
+  "last_turn_total_tokens": 14442,
+  "last_session_total_tokens": 38992,
   "cwd_mode": "parent-leaf",
   "last_cwd_label": "study/jen-test",
-  "updated_at": "2026-04-08T08:18:53.544Z"
+  "updated_at": "2026-04-08T08:24:17.514Z"
 }
