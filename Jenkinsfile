@@ -43,7 +43,7 @@ pipeline {
 
                      # 2. 새 빌드 파일을 배포 폴더로 복사 (이름을 app.jar로 통일)
                      echo "Copying jar file to /opt/deploy..."
-                     cp build/libs/*.jar /opt/deploy/app.jar
+		     cp build/libs/jenkinstest-0.0.1-SNAPSHOT.jar /opt/deploy/app.jar
 
                      # 3. 백그라운드에서 실행 (중요: BUILD_ID=dontKillMe)
                      echo "Starting new process..."
