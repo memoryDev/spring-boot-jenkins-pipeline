@@ -32,9 +32,25 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
-                // 실제 배포 시에는 빌드된 jar를 특정 서버로 복사하거나 Docker 이미지를 빌드합니다.
-                sh 'ls -l build/libs/'
+		echo 'Deploying application...'
+                 sh '''
+                     # 1. 기존에 실행 중인 8081 포트 프로세스 종료 (있을 경우만)
+                     echo "Stopping old process if exists..."
+                     CURRENT_PID=$(lsof -t -i:8081) || true
+                     if [ ! -z "$CURRENT_PID" ]; then
+                         kill -9 $CURRENT_PID || true
+                     fi
+
+                     # 2. 새 빌드 파일을 배포 폴더로 복사 (이름을 app.jar로 통일)
+                     echo "Copying jar file to /opt/deploy..."
+                     cp build/libs/*.jar /opt/deploy/app.jar
+
+                     # 3. 백그라운드에서 실행 (중요: BUILD_ID=dontKillMe)
+                     echo "Starting new process..."
+                     BUILD_ID=dontKillMe nohup java -jar /opt/deploy/app.jar > /opt/deploy/app.log 2>&1 &
+
+                     echo "Deployment completed successfully!"
+                 '''
             }
         }
     }
