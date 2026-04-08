@@ -34,9 +34,9 @@ pipeline {
             steps {
 		echo 'Deploying application...'
                  sh '''
-                     # 1. 기존에 실행 중인 8081 포트 프로세스 종료 (있을 경우만)
+                     # 1. 기존에 실행 중인 8888 포트 프로세스 종료 (있을 경우만)
                      echo "Stopping old process if exists..."
-                     CURRENT_PID=$(lsof -t -i:8081) || true
+                     CURRENT_PID=$(lsof -t -i:8888) || true
                      if [ ! -z "$CURRENT_PID" ]; then
                          kill -9 $CURRENT_PID || true
                      fi
