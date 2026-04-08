@@ -1,0 +1,12 @@
+{
+  "turn_count": 9,
+  "last_session_id": "6e19d8d9-9d05-4171-8c0f-5e6faaac2ef5",
+  "last_event_key": "6e19d8d9-9d05-4171-8c0f-5e6faaac2ef5:transcript:11238d17dac9b447df52921cdc63e2c67987902d70254832d306926b3ca5a7ea",
+  "last_transcript_hash": "11238d17dac9b447df52921cdc63e2c67987902d70254832d306926b3ca5a7ea",
+  "last_model": "gemini-3-flash-preview",
+  "last_turn_total_tokens": 34006,
+  "last_session_total_tokens": 712876,
+  "cwd_mode": "parent-leaf",
+  "last_cwd_label": "study/jen-test",
+  "updated_at": "2026-04-08T07:31:48.887Z"
+}
