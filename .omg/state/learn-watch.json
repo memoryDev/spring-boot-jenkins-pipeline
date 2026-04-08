@@ -1,12 +1,12 @@
 {
   "last_session_id": "704393a6-1aa0-42b1-9ae7-1876b60430e0",
-  "last_event_key": "704393a6-1aa0-42b1-9ae7-1876b60430e0:transcript:2bd98663b9352ce930d4a6cf15dcad7b96698f25ad57686de616b0b562d366d4",
+  "last_event_key": "704393a6-1aa0-42b1-9ae7-1876b60430e0:transcript:02ec2c34c800dd0a3dbca7efcfc9a738a298707e2b9307d9bb466ba5c4223f74",
   "last_prompted_session_id": "8a825d03-74d0-4768-bcb3-f1cb7db9bbc0",
-  "last_reason": "short-session",
+  "last_reason": "prompt-cooldown-active",
   "last_prompted_at": "2026-04-08T08:23:02.940Z",
-  "last_user_message_count": 6,
-  "last_actionable_message_count": 1,
+  "last_user_message_count": 12,
+  "last_actionable_message_count": 3,
   "deep_interview_lock_active": false,
   "deep_interview_lock_source": "C:\\study\\jen-test\\.omg\\state\\deep-interview.json",
-  "updated_at": "2026-04-08T08:47:36.695Z"
+  "updated_at": "2026-04-08T09:01:06.700Z"
 }
