@@ -19,6 +19,6 @@ public class HelloControllerTest {
     public void helloReturnsMessage() throws Exception {
         mockMvc.perform(get("/api/hello"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Hello, Jenkins CI/CD!"));
+                .andExpect(content().string("Hello, Jenkins CI/CD! test2222"));
     }
 }
