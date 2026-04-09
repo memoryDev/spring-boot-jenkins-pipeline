@@ -55,15 +55,27 @@ pipeline {
                      echo "기존 프로세스 확인 중..."
                      CURRENT_PID=$(lsof -t -i:8888) || true
                      if [ ! -z "$CURRENT_PID" ]; then
+                         echo "이전 프로세스(PID: $CURRENT_PID) 종료 중..."
                          kill -9 $CURRENT_PID || true
+                         sleep 3 # 프로세스가 완전히 종료될 시간을 줍니다.
                      fi
 
-                     # 2. 새 빌드 파일을 배포 폴더로 복사
-                     echo "파일 복사 중..."
-                     cp build/libs/jenkinstest-0.0.1-SNAPSHOT.jar /opt/deploy/app.jar
+                     # 2. 기존 배포 파일 삭제 (이전 버전이 남는 것을 방지)
+                     echo "기존 배포 파일 삭제 중..."
+                     rm -f /opt/deploy/app.jar
 
-                     # 3. 백그라운드에서 애플리케이션 실행
-                     echo "애플리케이션 실행 중..."
+                     # 3. 새 빌드 파일을 배포 폴더로 복사 (와일드카드를 사용하여 버전 변화에 대응)
+                     echo "새로운 JAR 파일 복사 중..."
+                     cp build/libs/jenkinstest-*-SNAPSHOT.jar /opt/deploy/app.jar
+
+                     # 4. 파일 복사 여부 확인
+                     if [ ! -f /opt/deploy/app.jar ]; then
+                         echo "오류: /opt/deploy/app.jar 파일이 복사되지 않았습니다!"
+                         exit 1
+                     fi
+
+                     # 5. 백그라운드에서 애플리케이션 실행
+                     echo "새로운 프로세스를 시작합니다..."
                      BUILD_ID=dontKillMe nohup java -jar /opt/deploy/app.jar > /opt/deploy/app.log 2>&1 &
 
                      echo "배포가 성공적으로 완료되었습니다!"
