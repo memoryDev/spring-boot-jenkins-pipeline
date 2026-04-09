@@ -52,6 +52,7 @@ pipeline {
                 // 혹은 환경변수에 BRANCH_NAME이 있을 경우를 대비
                 expression { env.BRANCH_NAME == 'main' }
               }
+        }
             steps {
                  script {
                    echo "현재 브랜치: ${env.GIT_BRANCH ?: env.BRANCH_NAME ?: '알 수 없음'}"
