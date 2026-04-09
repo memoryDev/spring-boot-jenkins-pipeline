@@ -1,46 +1,49 @@
-# Jenkins Test Project 🚀
+# 🚀 Spring Boot Jenkins CI/CD 실습 프로젝트
 
-이 프로젝트는 Spring Boot를 기반으로 구축된 단순 API 서버이며, Jenkins를 활용한 CI/CD 파이프라인 연동을 실습하고 검증하기 위해 제작되었습니다.
+이 프로젝트는 Spring Boot 기반의 API 서버를 Jenkins 파이프라인으로 자동 빌드 및 배포하는 환경을 구축한 실습 결과물입니다.
 
 ## 🛠 기술 스택
-- **Language:** Java 17
-- **Framework:** Spring Boot 3.x
+- **Java:** 17
+- **Framework:** Spring Boot 3.2.4
 - **Build Tool:** Gradle
-- **Test:** JUnit 5 (MockMvc, AssertJ)
-- **CI/CD:** Jenkins (Pipeline-as-Code)
+- **CI/CD:** Jenkins (Declarative Pipeline)
+- **Deployment:** Linux Server (Local Path: `/opt/deploy`)
 
-## ✨ 주요 기능
-- 단순 문자열을 반환하는 REST API 제공.
-- Jenkins를 통한 빌드, 테스트, 배포 자동화 프로세스 구현.
-- JUnit 5 기반의 단위 테스트 및 통합 테스트 구성.
+## 🏗 CI/CD 파이프라인 구성 (`Jenkinsfile`)
+프로젝트 루트의 `Jenkinsfile`을 통해 다음 단계가 자동으로 수행됩니다:
 
-## 🚀 로컬 실행 방법
-```bash
-# 저장소 클론
-git clone <repository-url>
+1.  **Checkout:** `deleteDir()`를 통해 워크스페이스를 초기화하고 최신 코드를 가져옵니다.
+2.  **Build:** `./gradlew clean bootJar` 명령으로 실행 가능한 최신 JAR를 생성합니다.
+3.  **Test:** 모든 테스트 코드를 실행하고 JUnit 리포트를 Jenkins 대시보드에 기록합니다.
+4.  **Deploy:** **`main` 브랜치에 머지될 때만** 작동하며, 아래 과정을 거칩니다:
+    - 이전 프로세스 종료 (9000 포트)
+    - 기존 로그 및 파일 정리 (권한 충돌 방지)
+    - 새로운 JAR 파일 복사 및 백그라운드 실행 (`nohup`)
+    - **Health Check:** 서버가 정상적으로 뜰 때까지 로그를 감시하여 배포 성공 여부 판정
 
-# 프로젝트 디렉토리 이동
-cd jen-test
+## 🌐 서비스 접속 정보
+| 환경 | 주소 | 비고 |
+|---|---|---|
+| **로컬 개발** | `http://localhost:8888` | IntelliJ 등에서 직접 실행 시 |
+| **운영(Jenkins)** | `http://localhost:9000` | Jenkins 자동 배포 서버 |
 
-# 빌드 및 실행
-./gradlew bootRun
-```
-실행 후 `http://localhost:8080/api/hello` 접속 시 `"Hello, Jenkins CI/CD!"` 응답을 확인할 수 있습니다.
+### 주요 API 명세
+- `GET /api/hello`: 기본 인사말 반환
+- `GET /api/hello2`: 배포 확인용 테스트 API
+
+## 💡 트러블슈팅 가이드 (배운 점)
+배포 과정에서 발생했던 주요 문제와 해결 방법입니다:
+
+1.  **Permission Denied:**
+    - `/opt/deploy` 폴더 권한 문제 해결을 위해 `sudo chown -R jenkins:jenkins /opt/deploy`를 수행했습니다.
+2.  **포트 충돌:**
+    - 로컬 서버(8888)와 젠킨스 서버(9000) 포트를 분리하여 상호 간섭 없이 개발이 가능하도록 설정했습니다.
+3.  **이전 버전 잔상:**
+    - `fuser -k` 명령어로 기존 프로세스를 확실히 죽이고, `JENKINS_NODE_COOKIE=dontKillMe` 설정을 통해 젠킨스 종료 후에도 앱이 유지되도록 처리했습니다.
+4.  **권한 꼬임:**
+    - 수동 실행으로 인해 생긴 로그 파일은 젠킨스가 수정할 수 없으므로, 배포 스크립트에서 기존 로그를 삭제(`rm -f`)하는 과정을 추가했습니다.
 
 ## 🧪 테스트 실행
 ```bash
 ./gradlew clean test
 ```
-- `HelloControllerTest`: MockMvc를 이용한 컨트롤러 단위 테스트.
-- `HelloIntegrationTest`: 실제 어플리케이션 컨텍스트를 로드하여 검증하는 통합 테스트.
-
-## 🎡 CI/CD 파이프라인 (Jenkins)
-프로젝트 루트의 `Jenkinsfile`을 통해 다음 단계가 자동으로 수행됩니다:
-1. **Build:** `./gradlew clean assemble`을 통해 실행 가능한 .jar 파일 생성.
-2. **Test:** `./gradlew test`를 실행하고 결과를 JUnit XML 형태로 Jenkins에 리포팅.
-3. **Deploy:** 빌드된 아티팩트의 배포를 시뮬레이션.
-
-## 📝 API 명세
-| Method | Path | Description | Response |
-|---|---|---|---|
-| GET | `/api/hello` | 인사말 반환 | "Hello, Jenkins CI/CD!" |
