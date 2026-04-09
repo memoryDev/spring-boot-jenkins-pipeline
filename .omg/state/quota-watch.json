@@ -1,12 +1,12 @@
 {
-  "turn_count": 7,
+  "turn_count": 8,
   "last_session_id": "23ccce3c-0d41-44bd-b07e-6820bf410089",
-  "last_event_key": "23ccce3c-0d41-44bd-b07e-6820bf410089:transcript:2b7b8fa68e45d79955470c733c4a7355c67ed068538910b99fee469aa1dfe086",
-  "last_transcript_hash": "2b7b8fa68e45d79955470c733c4a7355c67ed068538910b99fee469aa1dfe086",
+  "last_event_key": "23ccce3c-0d41-44bd-b07e-6820bf410089:transcript:aafc4016a44ab5f3450405a44cbbf51603f6e7b66ca64f65fd14eea035c86f6f",
+  "last_transcript_hash": "aafc4016a44ab5f3450405a44cbbf51603f6e7b66ca64f65fd14eea035c86f6f",
   "last_model": "gemini-3-flash-preview",
-  "last_turn_total_tokens": 19260,
-  "last_session_total_tokens": 165228,
+  "last_turn_total_tokens": 39862,
+  "last_session_total_tokens": 749583,
   "cwd_mode": "parent-leaf",
   "last_cwd_label": "study/jen-test",
-  "updated_at": "2026-04-09T01:37:41.626Z"
+  "updated_at": "2026-04-09T02:13:26.765Z"
 }

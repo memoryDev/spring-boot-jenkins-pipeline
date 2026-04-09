@@ -55,7 +55,7 @@ pipeline {
                      echo "기존 프로세스 확인 중..."
                      CURRENT_PID=$(lsof -t -i:8888) || true
                      if [ ! -z "$CURRENT_PID" ]; then
-                         kill -9 $CURRENT_PID || true
+                         kill -9 $CURRENT_PID || true g
                      fi
 
                      # 2. 새 빌드 파일을 배포 폴더로 복사
