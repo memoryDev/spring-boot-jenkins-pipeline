@@ -1,35 +1,31 @@
 pipeline {
-    // 1. 실행 환경 설정
     agent any
 
-    // 2. 도구 설정
     tools {
         jdk 'jdk17'
     }
 
-    // 3. 파이프라인 단계 정의
     stages {
-        // [1단계] 소스 코드 체크아웃
         stage('Checkout') {
             steps {
+                deleteDir()
                 checkout scm
+                echo "--- Current Source Commit Information ---"
+                sh 'git log -1'
             }
         }
 
-        // [2단계] 애플리케이션 빌드
         stage('Build') {
             steps {
                 sh 'chmod +x gradlew'
-                sh './gradlew clean assemble'
+                sh './gradlew clean bootJar'
             }
         }
 
-        // [3단계] 테스트 실행
         stage('Test') {
             steps {
                 sh './gradlew test'
             }
-            // 테스트 단계 전용 사후 처리
             post {
                 always {
                     junit '**/build/test-results/test/*.xml'
@@ -37,10 +33,8 @@ pipeline {
             }
         }
 
-        // [4단계] 서버 배포 (main 브랜치일 때만 실행)
         stage('Deploy') {
             when {
-                // 여러 브랜치 이름 표기 방식을 모두 체크하여 안정성을 높임
                 anyOf {
                     branch 'main'
                     expression { env.BRANCH_NAME == 'main' }
@@ -49,36 +43,52 @@ pipeline {
                 }
             }
             steps {
-                echo '운영 서버(main)에 배포를 시작합니다...'
+                echo '운영 서버 배포를 시작합니다 (Port: 9000)...'
                 sh '''
-                     # 1. 기존에 실행 중인 8888 포트 프로세스 종료 (있을 경우만)
-                     echo "기존 프로세스 확인 중..."
-                     CURRENT_PID=$(lsof -t -i:8888) || true
-                     if [ ! -z "$CURRENT_PID" ]; then
-                         kill -9 $CURRENT_PID || true g
-                     fi
+                     # 1. 기존 9000 포트 프로세스 종료
+                     fuser -k 9000/tcp || true
+                     sleep 3
 
-                     # 2. 새 빌드 파일을 배포 폴더로 복사
-                     echo "파일 복사 중..."
-                     cp build/libs/jenkinstest-0.0.1-SNAPSHOT.jar /opt/deploy/app.jar
+                     # 2. 기존 로그 파일 삭제 (권한 꼬임 방지)
+                     # 사용자님이 수동으로 실행해서 생긴 파일이 젠킨스 실행을 방해할 수 있으므로 삭제합니다.
+                     sudo rm -f /opt/deploy/app.log || true
 
-                     # 3. 백그라운드에서 애플리케이션 실행
-                     echo "애플리케이션 실행 중..."
-                     BUILD_ID=dontKillMe nohup java -jar /opt/deploy/app.jar > /opt/deploy/app.log 2>&1 &
+                     # 3. 새 빌드 파일 복사
+                     TARGET_JAR=$(find build/libs -name "*-SNAPSHOT.jar" ! -name "*-plain.jar")
+                     cp $TARGET_JAR /opt/deploy/app.jar
 
-                     echo "배포가 성공적으로 완료되었습니다!"
-                 '''
+                     # 4. 백그라운드 실행 (프로세스 유지 설정)
+                     echo "Starting new process with JENKINS_NODE_COOKIE=dontKillMe..."
+                     export JENKINS_NODE_COOKIE=dontKillMe
+                     
+                     # 5. 실행 (환경변수와 포트 지정)
+                     nohup java -jar /opt/deploy/app.jar --server.port=9000 > /opt/deploy/app.log 2>&1 &
+                     
+                     # 6. 기동 확인 (최대 30초 대기)
+                     echo "서버 구동 대기 중..."
+                     for i in {1..15}; do
+                         if grep -q "Started JenkinstestApplication" /opt/deploy/app.log; then
+                             echo "서버가 성공적으로 시작되었습니다! (Port: 9000)"
+                             break
+                         fi
+                         sleep 2
+                         if [ $i -eq 15 ]; then
+                             echo "오류: 서버 구동 확인 실패. 로그 하단을 출력합니다:"
+                             tail -n 50 /opt/deploy/app.log
+                             exit 1
+                         fi
+                     done
+                '''
             }
         }
     }
 
-    // 4. 전체 파이프라인 최종 결과 처리
     post {
         success {
-            echo 'CI/CD 파이프라인이 성공적으로 완료되었습니다!'
+            echo 'CI/CD 파이프라인 성공! http://localhost:9000 에서 확인하세요.'
         }
         failure {
-            echo 'CI/CD 파이프라인이 실패했습니다. 젠킨스 로그를 확인해 주세요.'
+            echo 'CI/CD 파이프라인 실패! 로그를 확인해 주세요.'
         }
     }
 }
