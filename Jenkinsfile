@@ -45,10 +45,18 @@ pipeline {
 
         // [4단계] 서버 배포
         stage('Deploy') {
-            when {
+             anyOf {
                 branch 'main'
-            }
+                expression { env.GIT_BRANCH == 'main' }
+                expression { env.GIT_BRANCH == 'origin/main' }
+                // 혹은 환경변수에 BRANCH_NAME이 있을 경우를 대비
+                expression { env.BRANCH_NAME == 'main' }
+              }
             steps {
+                 script {
+                   echo "현재 브랜치: ${env.GIT_BRANCH ?: env.BRANCH_NAME ?: '알 수 없음'}"
+                 }
+
                 echo '운영 서버(main)에 배포를 시작합니다...'
                 sh '''
                      # 1. 기존에 실행 중인 8888 포트 프로세스 종료 (있을 경우만)
